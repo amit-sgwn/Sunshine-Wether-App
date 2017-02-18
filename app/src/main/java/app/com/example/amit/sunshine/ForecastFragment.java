@@ -1,5 +1,6 @@
 package app.com.example.amit.sunshine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -82,7 +83,10 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String forcast = mArrayAdapter.getItem(position);
-                Toast.makeText(getActivity(),forcast,Toast.LENGTH_LONG).show();
+               // Toast.makeText(getActivity(),forcast,Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getActivity(),DetailActivity.class).putExtra(Intent.EXTRA_TEXT,forcast);
+                startActivity(intent);
+
             }
         });
         return  rootView;
