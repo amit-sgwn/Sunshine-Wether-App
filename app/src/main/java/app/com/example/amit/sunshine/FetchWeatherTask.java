@@ -10,17 +10,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Amit on 2/19/2017.
  */
 
-public class FetchWeatherTask extends AsyncTask<String,Void,Void> {
+public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
 
     private final  String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
+    private String getReadableDateString(long time){
+        Date date = new Date(time*1000);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM D");
+        return simpleDateFormat.format(date).toString();
+    }
+
     @Override
-    protected Void doInBackground(String... params) {
+    protected String[] doInBackground(String... params) {
         HttpURLConnection urlConnection = null;
         BufferedReader bufferedReader=null;
 
