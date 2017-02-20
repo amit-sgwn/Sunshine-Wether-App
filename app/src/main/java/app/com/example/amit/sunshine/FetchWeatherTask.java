@@ -4,6 +4,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +29,47 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
         Date date = new Date(time*1000);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MMM D");
         return simpleDateFormat.format(date).toString();
+    }
+
+    private  String[] getWeatherDataFromJson(String forecastJsonStr ,int numdays) throws JSONException {
+
+        final String OWM_LIST = "list";
+        final String OWM_WEATHER = "weather";
+        final String OWM_TEMPERATURE="temp";
+        final String OWM_MAX="max";
+        final String OWM_MIN="min";
+        final String OWM_DATETIME="dt";
+        final String OWM_DESCRIPTION ="main";
+
+        JSONObject jsonObject = new JSONObject(forecastJsonStr);
+        JSONArray weatherArray = jsonObject.getJSONArray(OWM_LIST);
+
+        String[] resultStrs =  new String[numdays];
+
+        for(int i=0; i<weatherArray.length();i++){
+            String day;
+            String description;
+            String HighandLow;
+
+            JSONObject dayForecast =weatherArray.getJSONObject(i);
+            long dateTime = dayForecast.getLong(OWM_DATETIME);
+            day=getReadableDateString(dateTime);
+
+            JSONObject weatherObj = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
+            description = weatherObj.getString(OWM_DESCRIPTION);
+
+            JSONObject tempJsonObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
+            double low = tempJsonObject.getDouble(OWM_MIN);
+            double high = tempJsonObject.getDouble(OWM_MAX);
+
+            HighandLow=formatHighLows(high,low);
+            resultStrs[i]=day+" - "+description + " - "+HighandLow;
+        }
+        return  resultStrs;
+    }
+
+    private String formatHighLows(double high, double low) {
+        return high+"/" +low;
     }
 
     @Override
@@ -89,6 +134,12 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
                     Log.e(LOG_TAG,"Error closing stream",e);
                 }
             }
+        }
+        try{
+            return getWeatherDataFromJson(forecastJsonStr,numDays);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG,"ERROR PARSING",e)
+            e.printStackTrace();
         }
         return null;
     }
