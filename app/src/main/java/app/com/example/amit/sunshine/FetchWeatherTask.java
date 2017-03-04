@@ -138,7 +138,7 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
         try{
             return getWeatherDataFromJson(forecastJsonStr,numDays);
         } catch (JSONException e) {
-            Log.e(LOG_TAG,"ERROR PARSING",e)
+            Log.e(LOG_TAG,"ERROR PARSING",e);
             e.printStackTrace();
         }
         return null;
